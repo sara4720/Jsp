@@ -2,10 +2,10 @@ package kr.co.jboard1.dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import com.mysql.jdbc.PreparedStatement;
+
 import kr.co.jboard1.bean.MemberBean;
 import kr.co.jboard1.bean.TermsBean;
 import kr.co.jboard1.db.DBConfig;
@@ -19,20 +19,59 @@ public class UserDao {
 	public static UserDao getInstance() {
 		return instance;
 	}
-
-	private Connection conn;
-	private PreparedStatement pstmt;
-	private Statement stmt;
-	private ResultSet rs;
+	
+	private Connection        conn = null;
+	private PreparedStatement psmt = null;
+	private Statement         stmt = null;
+	private ResultSet         rs = null;
+	
+	public int selectCountUser(String uid) throws Exception {
+		
+		conn = DBConfig.getInstance().getConnection();
+		
+		stmt = conn.createStatement();
+		
+		String sql = "SELECT COUNT(*) FROM `JBOARD_MEMBER` WHERE `uid`='"+uid+"';";
+		rs = stmt.executeQuery(sql);
+		
+		int count = 0;
+		
+		if(rs.next()) {
+			count = rs.getInt(1);
+		}
+		
+		close();
+		
+		return count;
+	}
+	
+	public int selectCountNick(String nick) throws Exception {
+		
+		conn = DBConfig.getInstance().getConnection();
+		
+		stmt = conn.createStatement();
+		
+		String sql = "SELECT COUNT(*) FROM `JBOARD_MEMBER` WHERE `nick`='"+nick+"';";
+		rs = stmt.executeQuery(sql);
+		
+		int count = 0;
+		
+		if(rs.next()) {
+			count = rs.getInt(1);
+		}
+		
+		close();
+		
+		return count;
+	}
+	
 	
 	public void insertUser(MemberBean mb) throws Exception {
 		
 		conn = DBConfig.getInstance().getConnection();
 		
-		// 3단계 - SQL 실행객체 생성
 		stmt = conn.createStatement();
 		
-		// 4단계 - SQL 실행
 		String sql  = "INSERT INTO `JBOARD_MEMBER` SET ";
 			   sql += "`uid`='"+mb.getUid()+"',";
 			   sql += "`pass`=PASSWORD('"+mb.getPass()+"'),"; 
@@ -48,28 +87,21 @@ public class UserDao {
 		
 		stmt.executeUpdate(sql);		   
 		
-		// 5단계 - 결과셋 처리(SELECT일 경우)
-		// 6단계 - 데이터베이스 종료
-		stmt.close();
-		conn.close();
+		close();
 	}
 	
 	public MemberBean selectUser(String uid, String pass) throws Exception {
 		
 		conn = DBConfig.getInstance().getConnection();
 		
-		// 3단계 - SQL 실행객체 생성
 		stmt = conn.createStatement();
 		
-		// 4단계 - SQL 실행
 		String sql  = "SELECT * FROM `JBOARD_MEMBER` ";
-			   sql += "WHERE `uid`='"+uid+"' AND `pass`=PASSWORD('"+pass+"');";
-			   
-		rs = stmt.executeQuery(sql);		
+		       sql += "WHERE `uid`='"+uid+"' AND `pass`=PASSWORD('"+pass+"');";
 		
-		// 5단계 - 결과셋 처리(SELECT일 경우)
-		// 회원이 아닐 경우
-		MemberBean mb = null; 
+		rs = stmt.executeQuery(sql);
+		
+		MemberBean mb = null;
 		
 		if(rs.next()){
 			// 회원이 맞을 경우
@@ -88,29 +120,24 @@ public class UserDao {
 			mb.setRdate(rs.getString(12));
 		}
 		
-		// 6단계 - 데이터베이스 종료
-		rs.close();
-		stmt.close();
-		conn.close();
+		close();
 		
 		return mb;
-
 	}
+	
 	public void selectUsers() throws Exception {}
 	public void updateUser() throws Exception {}
 	public void deleteUser() throws Exception {}
+	
 	public TermsBean selectTerms() throws Exception {
 		
 		conn = DBConfig.getInstance().getConnection();
 		
-		// 3단계 - SQL 실행객체 생성
 		stmt = conn.createStatement();
 		
-		// 4단계 - SQL 실행
 		String sql = "SELECT * FROM `JBOARD_TERMS`;";
 		rs = stmt.executeQuery(sql);
 		
-		// 5단계 - 결과셋 처리(SELECT일 경우)
 		TermsBean tb = new TermsBean();
 		
 		if(rs.next()){
@@ -121,15 +148,15 @@ public class UserDao {
 			tb.setPrivacy(privacy);
 		}
 		
-		// 6단계 - 데이터베이스 종료
-		rs.close();
-		stmt.close();
-		conn.close();
+		close();
 		
 		return tb;
 	}
 	
-	
-	
-	
+	public void close() throws Exception {
+		if(rs   != null) rs.close();		
+		if(stmt != null) stmt.close();
+		if(psmt != null) psmt.close();
+		if(conn != null) conn.close();	
+	}
 }

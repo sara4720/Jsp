@@ -13,9 +13,12 @@ public class ArticleBean {
 	private String uid;
 	private String regip;
 	private String rdate;
-	
+
 	// Ãß°¡
 	private String nick;
+	private String oldName;
+	private int download;
+	private int FileSeq;
 	
 	public int getSeq() {
 		return seq;
@@ -29,6 +32,11 @@ public class ArticleBean {
 	public void setParent(int parent) {
 		this.parent = parent;
 	}
+	
+	public void setParent(String parent) {
+		this.parent = Integer.parseInt(parent);
+	}
+	
 	public int getComment() {
 		return comment;
 	}
@@ -53,12 +61,15 @@ public class ArticleBean {
 	public void setContent(String content) {
 		this.content = content;
 	}
+	
 	public int getFile() {
 		return file;
 	}
+	
 	public void setFile(int file) {
 		this.file = file;
 	}
+	
 	public int getHit() {
 		return hit;
 	}
@@ -92,7 +103,28 @@ public class ArticleBean {
 		this.nick = nick;
 	}
 	
+	public String getOldName() {
+		return oldName;
+	}
 	
+	public void setOldName(String oldName) {
+		this.oldName = oldName;
+	}
 	
+	public int getDownload() {
+		return download;
+	}
+	
+	public void setDownload(int download) {
+		this.download = download;
+	}
+	
+	public int getFileSeq() {
+		return FileSeq;
+	}
+	
+	public void setFileSeq(int fileSeq) {
+		FileSeq = fileSeq;
+	}
 	
 }
